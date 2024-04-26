@@ -10,6 +10,10 @@ cd LRUcache-react-app
 npm install
 npm run dev
 
+# Golang dependency
+
+go to cloned golang directory and start server by => go run main.go
+
 # Visit through Browser
 
 http://localhost:5173/
