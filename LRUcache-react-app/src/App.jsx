@@ -6,7 +6,7 @@ const App = () => {
     const [key, setKey] = useState('');
     const [value, setValue] = useState('');
     const [keyGet, setKeyGet] = useState('');
-    const [valueGet, setValueGet] = useState('');
+    const [valueGet, setValueGet] = useState('key value not exists');
     const [duration, setDuration] = useState(0);
     const [initialized, setInitialized] = useState(false); // State to track cache initialization
     const [fetchedValue, setFetchedValue] = useState('');
@@ -58,10 +58,16 @@ const App = () => {
     };
 
     const handleFetchKey = () => {
-        fetch(`http://localhost:8080/cache/${key}`)
+        fetch(`http://localhost:8080/cache/${keyGet}`)
             .then(response => response.json())
             .then(data => {
-              setValueGet(data.value);
+                console.log('hiiiiiiiiii',data.value)
+                if (data.error=="Key not found"){
+                    setValueGet("key not exists");
+                }else{
+                    setValueGet(data.value);
+
+                }
             })
             .catch(error => {
                 console.error('Error fetching value for key:', error);
@@ -77,16 +83,21 @@ const App = () => {
             <input type="number" value={duration} onChange={e => setDuration(e.target.value)} placeholder="Duration" />
             <button onClick={handleSet}>Set</button>
             <ul>
-                {Object.entries(cache).map(([key, value]) => (
-                    <li key={key}>{key}: {value}</li>
-                ))}
-            </ul>
-            <div>
-                <h2>Fetch Value</h2>
-                <input type="text" value={keyGet} onChange={e => setKeyGet(e.target.value)} placeholder="Key" />
-                <button onClick={handleFetchKey}>Get</button>
-                {fetchedValue && <p>Value for key {keyGet}: {valueGet}</p>}
-            </div>
+    {Object.entries(cache).map(([cacheKey, cacheValue]) => (
+        <li key={cacheKey}>{cacheKey}: {cacheValue}</li>
+    ))}
+</ul>
+
+<div>
+    <h2>Fetch Value</h2>
+    <input type="text" value={keyGet} onChange={e => setKeyGet(e.target.value)} placeholder="Key" />
+    <button onClick={handleFetchKey}>Get</button>
+    {valueGet !== '' ? (
+        <p>Value for entered key : {valueGet}</p>
+    ) : (
+        <p>Key not found</p>
+    )}
+</div>
         </div>
     );
 };
