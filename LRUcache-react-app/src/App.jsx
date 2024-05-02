@@ -10,6 +10,8 @@ const App = () => {
     const [duration, setDuration] = useState(0);
     const [initialized, setInitialized] = useState(false); // State to track cache initialization
     const [fetchedValue, setFetchedValue] = useState('');
+    const [deleteKey, setKeyDelete] = useState('');
+    const [deletedKeyValue, setDeletedKeyValue] = useState('');
 
     // Connect to the WebSocket server
     const socket = io('http://localhost:8080');
@@ -74,6 +76,23 @@ const App = () => {
             });
     };
 
+    const handleDeleteKey = () => {
+        fetch(`http://localhost:8080/cache/${deleteKey}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                setDeletedKeyValue(`${key}: ${cache[key]}`);
+                fetchCache();
+            } else {
+                console.error('Failed to delete key:', response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting key:', error);
+        });
+    };
+
     return (
         <div>
             <h1>Cache</h1>
@@ -98,6 +117,12 @@ const App = () => {
         <p>Key not found</p>
     )}
 </div>
+<div>
+                <h2>Delete Key</h2>
+                <input type="text" value={deleteKey} onChange={e => setKeyDelete(e.target.value)} placeholder="Key to delete" />
+                <button onClick={handleDeleteKey}>Delete</button>
+                {deletedKeyValue && <p>Deleted key: {deleteKey}</p>}
+            </div>
         </div>
     );
 };
